@@ -3,19 +3,24 @@
 <input type="hidden" name="rel_id" value="{{ $model_id }}">
 
 @php
-    $htmlBlocksFields = [
+    $modelImageBlockFields = [
                 'key' => 'Chave',
                 'title' => 'Título',
-                'sub_title' => 'Sub Título',
+                'alt' => 'Alt',
                 'order' => 'Ordem'
             ];
 @endphp
 
 @php
-    $old = old('old_block_' . ($block ? $block->id : '0'), false);
-    $activeChecked = $old ? old('active') : optional($block)->active;
+    $old = old('old_block_' . ($image ? $image->id : '0'), false);
+    $activeChecked = $old ? old('active') : optional($image)->active;
 
 @endphp
+
+<div class="form-group">
+    <label for="inputFileImage">Imagem</label>
+    <input type="file" name="file_image" id="inputFileImage">
+  </div>
 
 <div class="checkbox">
     <label>
@@ -25,25 +30,15 @@
     </label>
 </div>
 
-@foreach($htmlBlocksFields as $key => $field)
+@foreach($modelImageBlockFields as $key => $field)
 
     <div class="form-group">
         <label for="{{ $key }}">{{ $field }}:</label>
         <input
             type="text"
             name="{{ $key }}"
-            value="{{ $old ? old($key) : optional($block)->{$key} }}"
+            value="{{ $old ? old($key) : optional($image)->{$key} }}"
             class="form-control">
     </div>
 
 @endforeach
-
-<div class="form-group">
-    <textarea
-        name="content"
-        class="{{ config('model-images.wysisyg_class') }}"
-        cols="30"
-        rows="10"
-        data-upload-dir="{{ $relationString }}">{{ $old ? old('content') : optional($block)->content }}
-    </textarea>
-</div>

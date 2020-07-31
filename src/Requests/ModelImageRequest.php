@@ -30,6 +30,7 @@ class ModelImageRequest extends FormRequest
         return [
             'rel' => 'required|string',
             'rel_id' => 'required|integer',
+            'file_image' => 'required|mimes:jpeg,png',
             'order' => 'integer',
             // 'key' => 'required',
         ];
@@ -42,6 +43,8 @@ class ModelImageRequest extends FormRequest
             'rel.string' => 'Relação inválida',
             'rel_id.required' => 'Sem identificação de instância',
             'rel_id.integer' => 'ID da instância inválido',
+            'file_image.required' => 'A imagem é obrigatória',
+            'file_image.mimes' => 'A imagem deve ser JPG ou PNG',
             'order.integer' => 'Ordem deve ser um número inteiro',
             // 'key.required' => 'Preencha a chave',
         ];

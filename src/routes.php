@@ -6,10 +6,10 @@
     Route::
         prefix(config($prefix, 'admin'))
         ->middleware(config($middle, []))
-        ->namespace('ClaudiusNascimento\HtmlBlocks\Controllers')
+        ->namespace('ClaudiusNascimento\ModelImages\Controllers')
             ->group(function() {
 
-        Route::resource('model-images', 'ModelGalleryController')
+        Route::resource('model-images', 'ModelImagesController')
             ->only(['store', 'update', 'destroy']);
 
     });

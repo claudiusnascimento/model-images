@@ -1,15 +1,12 @@
 <?php
 
-namespace ClaudiusNascimento\ModelGallery\Controllers;
+namespace ClaudiusNascimento\ModelImages\Controllers;
 
-//use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-//use Illuminate\Foundation\Bus\DispatchesJobs;
-//use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 
 use Exception;
-use ClaudiusNascimento\ModelGallery\Models\ModelGallery;
-use ClaudiusNascimento\ModelGallery\Requests\ModelImageRequest;
+use ClaudiusNascimento\ModelImages\Models\ModelImage;
+use ClaudiusNascimento\ModelImages\Requests\ModelImageRequest;
 
 class ModelImagesController extends BaseController
 {
@@ -20,9 +17,13 @@ class ModelImagesController extends BaseController
 
         $errorBag = $request->get('errorBag');
 
+        $uploaded = $request->file('file_image');
+
+        $request->merge($this->getSizeFields($uploaded));
+
         try {
 
-            $block = HtmlBlock::create($request->all());
+            $block = ModelImage::create($request->all());
 
         } catch (Exception $e) {
 
@@ -53,7 +54,7 @@ class ModelImagesController extends BaseController
     public function update(ModelImageRequest $request, $id)
     {
 
-        $block = ModelGallery::where('rel', $request->get('rel'))->find($id);
+        $block = ModelImage::where('rel', $request->get('rel'))->find($id);
 
         $errorBag = $request->get('errorBag');
 
@@ -115,6 +116,19 @@ class ModelImagesController extends BaseController
         );
 
         return redirect()->back();
+    }
+
+    private function getSizeFields($uploaded) {
+
+        $size = $uploaded->getSize();
+
+        list($width, $height) = getimagesize($uploaded->getRealPath());
+
+        return [
+            'size' => $size,
+            'width' => $width,
+            'height' => $height,
+        ];
     }
 
 }
