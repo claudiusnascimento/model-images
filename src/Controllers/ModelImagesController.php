@@ -15,20 +15,28 @@ class ModelImagesController extends BaseController
     public function store(ModelImageRequest $request)
     {
 
-        $errorBag = $request->get('errorBag');
 
-        $uploaded = $request->file('file_image');
-
-        $request->merge($this->getSizeFields($uploaded));
 
         try {
 
-            $block = ModelImage::create($request->all());
+            $errorBag = $request->get('errorBag');
+
+            $uploaded = $request->file('file_image');
+
+            $request->merge($this->getSizeFields($uploaded));
+
+            $disk = $request->getIfHas('disk', config('filesystems.default'));
+
+            $src = $request->file('file_image')->store($request->get('rel'), $disk);
+
+            $request->merge(['src' => $src]);
+
+            $image = ModelImage::create($request->all());
 
         } catch (Exception $e) {
 
             //dd($e->getMessage());
-            \Log::error('MODEL_GALLERY_ERROR::');
+            \Log::error('MODEL_IMAGE_ERROR::');
             \Log::error($e->getTraceAsString());
 
             $error = env('APP_DEBUG', false) ?
@@ -41,9 +49,9 @@ class ModelImagesController extends BaseController
                     ->withErrors($error, $errorBag);
         }
 
-        session()->flash('block_message', [
+        session()->flash('image_message', [
                 'type' => 'success',
-                'message' => 'Bloco criado com sucesso'
+                'message' => 'Imagem criada com sucesso'
             ]
         );
 
@@ -72,12 +80,12 @@ class ModelImagesController extends BaseController
 
         } catch (Exception $e) {
 
-            \Log::error('MODEL_GALLERY_ERROR::');
+            \Log::error('MODEL_IMAGE_ERROR::');
             \Log::error($e->getTraceAsString());
 
             $error = env('APP_DEBUG', false) ?
                                 $e->getMessage() :
-                                'Erro ao criar bloco de html';
+                                'Model Image create error';
 
             return redirect()
                     ->back()
@@ -87,7 +95,7 @@ class ModelImagesController extends BaseController
 
         session()->flash($errorBag, [
                 'type' => 'success',
-                'message' => 'Bloco editado com sucesso'
+                'message' => 'Successful edit model image'
             ]
         );
 
@@ -100,18 +108,18 @@ class ModelImagesController extends BaseController
         if($block = ModelGallery::where('rel', $rel)->find($id))
         {
             $block->delete();
-            session()->flash('block_message', [
+            session()->flash('image_message', [
                     'type' => 'success',
-                    'message' => 'Bloco deletado com sucesso'
+                    'message' => 'Image deleted successfuly'
                 ]
             );
 
             return redirect()->back();
         }
 
-        session()->flash('block_message', [
+        session()->flash('image_message', [
                 'type' => 'danger',
-                'message' => 'Bloco não encontrado'
+                'message' => 'Model Image dont finded'
             ]
         );
 
@@ -125,7 +133,7 @@ class ModelImagesController extends BaseController
         list($width, $height) = getimagesize($uploaded->getRealPath());
 
         return [
-            'size' => $size,
+            'weight' => $size,
             'width' => $width,
             'height' => $height,
         ];

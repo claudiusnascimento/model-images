@@ -16,6 +16,10 @@
                     'session_flash_key' => 'modelImagesEditErrorBag_' . $image->id
                 ])
 
+                <div class="image-container">
+                    {!! $image->small(['class' => 'cool']) !!}
+                </div>
+
                 <form
                     action="{{ route('model-images.update', $image->id) }}"
                     method="POST"

@@ -26,5 +26,29 @@ class ModelImage extends Model
         'filters'
     ];
 
+    /**
+     *  Return the html of the image
+     */
+    public function toHtml($attrs = [])
+    {
+        $src = asset('storage/' . $this->src);
+
+        $attrs['src'] = $src;
+
+        $img = '<img ';
+
+        foreach($attrs as $key => $attr) {
+            $img .= $key . '="'. $attr .'"';
+        }
+
+        $img .= '>';
+
+        return $img;
+    }
+
+    public function small($attrs = []) {
+        return $this->toHtml(array_merge($attrs, ['width' => 100]));
+    }
+
 }
 

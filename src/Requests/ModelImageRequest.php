@@ -62,4 +62,9 @@ class ModelImageRequest extends FormRequest
 
     }
 
+    public function getIfHas($key, $default = '')
+    {
+        return $this->has($key) ? $this->get($key) : $default;
+    }
+
 }
