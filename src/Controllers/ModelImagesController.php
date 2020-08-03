@@ -15,21 +15,21 @@ class ModelImagesController extends BaseController
     public function store(ModelImageRequest $request)
     {
 
-
-
         try {
 
             $errorBag = $request->get('errorBag');
 
-            $uploaded = $request->file('file_image');
+            $this->uploadFileAndMergeInRequest($request);
 
-            $request->merge($this->getSizeFields($uploaded));
+            // $uploaded = $request->file('file_image');
 
-            $disk = $request->getIfHas('disk', config('filesystems.default'));
+            // $request->merge($this->getSizeFields($uploaded));
 
-            $src = $request->file('file_image')->store($request->get('rel'), $disk);
+            // $disk = $request->getIfHas('disk', config('filesystems.default'));
 
-            $request->merge(['src' => $src]);
+            // $src = $request->file('file_image')->store($request->get('rel'), $disk);
+
+            // $request->merge(['src' => $src]);
 
             $image = ModelImage::create($request->all());
 
@@ -62,21 +62,25 @@ class ModelImagesController extends BaseController
     public function update(ModelImageRequest $request, $id)
     {
 
-        $block = ModelImage::where('rel', $request->get('rel'))->find($id);
+        $image = ModelImage::where('rel', $request->get('rel'))->find($id);
 
         $errorBag = $request->get('errorBag');
 
-        if(!$block) {
+        if(!$image) {
 
             return redirect()
                     ->back()
                     ->withInput()
-                    ->withErrors('Bloco não encontrado', $errorBag);
+                    ->withErrors('Imagem não encontrada', $errorBag);
         }
 
         try {
 
-            $block = $block->update($request->all());
+            if($request->hasFile('file_image')) {
+                $this->uploadFileAndMergeInRequest($request);
+            }
+
+            $image = $image->update($request->all());
 
         } catch (Exception $e) {
 
@@ -102,15 +106,29 @@ class ModelImagesController extends BaseController
         return redirect()->back();
     }
 
+    private function uploadFileAndMergeInRequest($request)
+    {
+        $uploaded = $request->file('file_image');
+
+        $request->merge($this->getSizeFields($uploaded));
+
+        $disk = $request->getIfHas('disk', config('filesystems.default'));
+
+        $src = $request->file('file_image')->store($request->get('rel'), $disk);
+
+        $request->merge(['src' => $src]);
+    }
+
     public function destroy($id)
     {
 
-        if($block = ModelGallery::where('rel', $rel)->find($id))
+        if($modelImage = ModelImage::find($id))
         {
-            $block->delete();
+            $modelImage->delete();
+
             session()->flash('image_message', [
                     'type' => 'success',
-                    'message' => 'Image deleted successfuly'
+                    'message' => 'Imagem deletada com sucesso'
                 ]
             );
 
@@ -119,7 +137,7 @@ class ModelImagesController extends BaseController
 
         session()->flash('image_message', [
                 'type' => 'danger',
-                'message' => 'Model Image dont finded'
+                'message' => 'Imagem não encontrada'
             ]
         );
 

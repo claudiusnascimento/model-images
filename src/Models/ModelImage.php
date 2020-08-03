@@ -31,9 +31,7 @@ class ModelImage extends Model
      */
     public function toHtml($attrs = [])
     {
-        $src = asset('storage/' . $this->src);
-
-        $attrs['src'] = $src;
+        $attrs['src'] = $this->link();
 
         $img = '<img ';
 
@@ -48,6 +46,11 @@ class ModelImage extends Model
 
     public function small($attrs = []) {
         return $this->toHtml(array_merge($attrs, ['width' => 100]));
+    }
+
+    public function link()
+    {
+        return asset('storage/' . $this->src);
     }
 
 }

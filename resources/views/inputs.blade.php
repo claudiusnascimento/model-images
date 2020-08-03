@@ -18,8 +18,8 @@
 @endphp
 
 <div class="form-group">
-    <label for="inputFileImage">Imagem</label>
-    <input type="file" name="file_image" id="inputFileImage">
+    <label for="file_image">Imagem</label>
+    <input type="file" name="file_image">
   </div>
 
 <div class="checkbox">

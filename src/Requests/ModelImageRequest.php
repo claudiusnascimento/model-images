@@ -26,11 +26,12 @@ class ModelImageRequest extends FormRequest
 
         $this->errorBag = $this->get('errorBag', 'default');
 
+        $file_required_rule = $this->getMethod() == 'POST' ? 'required|' : '';
 
         return [
             'rel' => 'required|string',
             'rel_id' => 'required|integer',
-            'file_image' => 'required|mimes:jpeg,png',
+            'file_image' => $file_required_rule . 'mimes:jpeg,png',
             'order' => 'integer',
             // 'key' => 'required',
         ];
@@ -51,12 +52,6 @@ class ModelImageRequest extends FormRequest
     }
 
     public function prepareForValidation()  {
-
-        $order = $this->get('order');
-
-        if(!$order || !is_int($order)) {
-            $this->merge(['order' => 0]);
-        }
 
         $this->merge(['active' => $this->has('active')]);
 
